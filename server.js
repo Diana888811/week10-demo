@@ -1,6 +1,5 @@
 const express = require('express');
 const axios = require('axios');
-const { response } = require('express');
 
 const app = express();
 
@@ -12,8 +11,26 @@ app.get('/', (req, res)=>{
     axios.get(url)
     .then(response => {
         let data = response.data;
-        console.log(data.title);
-        res.render('index', {dataToRender: data});
+        let releaseDate = new Date(data.release_date).getFullYear();
+
+        let genresToDisplay = '';
+        data.genres.forEach(genre => {
+            genresToDisplay = genresToDisplay + `${genre.name}, `
+        }); 
+
+        let genresUpdated = genresToDisplay.slice(0, -2) + '.';
+
+        let posterUrl = `https://www.themoviedb.org/t/p/w600_and_h900_bestv2${data.poster_path}`;
+
+        let currentYear = new Date().getFullYear();
+
+        res.render('index', {
+            dataToRender: data, 
+            year: currentYear,
+            releaseYear: releaseDate,
+            genres: genresUpdated,
+            poster: posterUrl
+        });
     });
 
 
